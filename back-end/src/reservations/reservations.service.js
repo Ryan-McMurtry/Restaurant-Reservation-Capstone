@@ -8,7 +8,14 @@ const list = (reservation_date) => {
     }
 }
 
+const create = (newReservation) => {
+    return knex("reservations")
+    .insert(newReservation, "*")
+    .then((createdReservations) => createdReservations[0])
+}
+
 
 module.exports = {
-    list
+    list,
+    create
 }

@@ -2,15 +2,7 @@ import { useHistory } from "react-router-dom";
 
 function Reservation({ reservations }) {
   const history = useHistory();
-  // const mockData = {
-  //   first_name: "derm",
-  //   last_name: "werm",
-  //   mobile_number: "8080000000",
-  //   reservation_date: "12/25/1990",
-  //   reservation_time: "4:00",
-  //   people: 2,
-  //   status: "booked",
-  // };
+
 
   return (
     <table className=" table text-center">

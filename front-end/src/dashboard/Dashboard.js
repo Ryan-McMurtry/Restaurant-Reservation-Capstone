@@ -60,20 +60,20 @@ function Dashboard() {
         <div className="btn-group" role="group" aria-label="Basic example">
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary mr-2"
             onClick={buttonSetDate}
           >
             Previous
           </button>
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary mr-2"
             onClick={buttonSetDate}
           >
             Today
           </button>
           <button
-            type="button"
+            type="button "
             className="btn btn-primary"
             onClick={buttonSetDate}
           >
