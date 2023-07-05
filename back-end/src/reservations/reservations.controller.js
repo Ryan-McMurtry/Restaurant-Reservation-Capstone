@@ -1,13 +1,137 @@
-const reservationService = require("./reservations.service")
-const asyncErrorBoundary = require("../errors/asyncErrorBoundary")
+const reservationService = require("./reservations.service");
+const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
-async function list(req, res) {
-  const { date } = req.query
-  const data = await reservationService.list(date);
-  res.json({data});
+//Validations
+
+async function dataExists(req, res, next) {
+  if (req.body.data) {
+    return next();
+  } else {
+    return next({
+      message: "Body of Data does not exist",
+      status: 400,
+    });
+
+  }
 }
 
-const create = async(req, res) => {
+async function firstNameExists(req, res, next) {
+  if (req.params.reservation_option === "status") {
+    return next();
+  }
+  const { first_name } = req.body.data;
+  if (first_name && first_name !== "") {
+    return next();
+  } else {
+    return next({
+      message: "Body of Data must contain first_name",
+      status: 400,
+    });
+
+  }
+}
+
+async function lastNameExists(req, res, next) {
+  if (req.params.reservation_option === "status") {
+    return next();
+  }
+  const { last_name } = req.body.data;
+  if (last_name && last_name !== "") {
+    return next();
+  } else {
+    return next({
+      message: "Body of Data must contain last_name",
+      status: 400,
+    });
+
+  }
+}
+
+async function mobileNumberExists(req, res, next) {
+  if (req.params.reservation_option === "status") {
+    return next();
+  }
+  const { mobile_number } = req.body.data;
+  if (mobile_number && mobile_number !== "") {
+    return next();
+  } else {
+    return next({
+      message: "Body of Data must contain mobile_number",
+      status: 400,
+    });
+ 
+  }
+}
+
+async function peopleExists(req, res, next) {
+  if (req.params.reservation_option === "status") {
+    return next();
+  }
+  const { people } = req.body.data;
+  if (people && typeof people === "number" && people > 0) {
+    return next();
+  } else {
+    return next({
+      message: "Body of Data must contain a number of people",
+      status: 400,
+    });
+
+  }
+}
+
+async function reservationDateExists(req, res, next) {
+  if (req.params.reservation_option === "status") {
+    return next();
+  }
+  const { reservation_date } = req.body.data;
+  const dateExpression = new RegExp(
+    /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/
+  );
+
+  if (
+    reservation_date &&
+    reservation_date !== "" &&
+    reservation_date.match(dateExpression)
+  ) {
+    return next();
+  } else {
+    return next({
+      message: "Body of Date must contain reservation_date",
+      status: 400,
+    });
+  }
+}
+
+async function reservationTimeExists(req, res, next) {
+  if (req.params.reservation_option === "status") {
+    return next();
+  }
+  const { reservation_time } = req.body.data;
+  const timeExpression = new RegExp(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/);
+  if (
+    reservation_time &&
+    reservation_time !== "" &&
+    reservation_time.match(timeExpression)
+  ) {
+    return next();
+  } else {
+    return next({
+      message: "Body of Data must contain reservation_time",
+      status: 400,
+    });
+
+  }
+}
+
+//CRUDL
+async function list(req, res) {
+  const { date } = req.query;
+  const data = await reservationService.list(date);
+  console.log(data)
+  res.json( {data} );
+}
+
+const create = async (req, res) => {
   const {
     first_name,
     last_name,
@@ -26,12 +150,21 @@ const create = async(req, res) => {
     people,
     status: "booked",
   };
-  const newReservation = await reservationService.create(reservationData)
-  res.status(201).json({ data: newReservation })
-}
-
+  const newReservation = await reservationService.create(reservationData);
+  // console.log(newReservation)
+  res.status(201).json({ data: newReservation });
+};
 
 module.exports = {
   list: [asyncErrorBoundary(list)],
-  create: [asyncErrorBoundary(create)]
+  create: [
+    asyncErrorBoundary(dataExists),
+    asyncErrorBoundary(firstNameExists),
+    asyncErrorBoundary(lastNameExists),
+    asyncErrorBoundary(mobileNumberExists),
+    asyncErrorBoundary(peopleExists),
+    asyncErrorBoundary(reservationDateExists),
+    asyncErrorBoundary(reservationTimeExists),
+    asyncErrorBoundary(create),
+  ],
 };

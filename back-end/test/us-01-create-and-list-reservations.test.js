@@ -3,6 +3,8 @@ const request = require("supertest");
 const app = require("../src/app");
 const knex = require("../src/db/connection");
 
+var seedCount = 0;
+
 describe("US-01 - Create and list reservations", () => {
   beforeAll(() => {
     return knex.migrate
@@ -12,6 +14,8 @@ describe("US-01 - Create and list reservations", () => {
   });
 
   beforeEach(() => {
+    seedCount++;
+    // console.log(seedCount);
     return knex.seed.run();
   });
 
