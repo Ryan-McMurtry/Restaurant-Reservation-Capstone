@@ -11,7 +11,6 @@ async function dataExists(req, res, next) {
       message: "Body of Data does not exist",
       status: 400,
     });
-
   }
 }
 
@@ -27,7 +26,6 @@ async function firstNameExists(req, res, next) {
       message: "Body of Data must contain first_name",
       status: 400,
     });
-
   }
 }
 
@@ -43,7 +41,6 @@ async function lastNameExists(req, res, next) {
       message: "Body of Data must contain last_name",
       status: 400,
     });
-
   }
 }
 
@@ -59,7 +56,6 @@ async function mobileNumberExists(req, res, next) {
       message: "Body of Data must contain mobile_number",
       status: 400,
     });
- 
   }
 }
 
@@ -75,7 +71,6 @@ async function peopleExists(req, res, next) {
       message: "Body of Data must contain a number of people",
       status: 400,
     });
-
   }
 }
 
@@ -119,16 +114,101 @@ async function reservationTimeExists(req, res, next) {
       message: "Body of Data must contain reservation_time",
       status: 400,
     });
-
   }
+}
+
+async function pastReservation(req, res, next) {
+  if (req.params.reservation_option === "status") {
+    return next();
+  }
+  const { reservation_date } = req.body.data;
+  const today = new Date();
+  const dateString = reservation_date.split("-");
+  const reservationDate = new Date(
+    Number(dateString[0]),
+    Number(dateString[1]) - 1,
+    Number(dateString[2]),
+    0,
+    0,
+    1
+  );
+  // console.log(reservationDate)
+  if (reservationDate > today) {
+    return next();
+  } else {
+    return next({
+      message: "A reservation must be made for the future",
+      status: 400,
+    });
+  }
+}
+
+async function reservationOnTuesday(req, res, next) {
+  if (req.params.reservation_option === "status") {
+    return next();
+  }
+  const { reservation_date } = req.body.data;
+  const dateString = reservation_date.split("-");
+  const reservationDate = new Date(
+    Number(dateString[0]),
+    Number(dateString[1]) - 1,
+    Number(dateString[2]),
+    0,
+    0,
+    1
+  );
+  console.log(reservationDate);
+  if (reservationDate.getDay() === 2) {
+    return next({
+      message: "Sorry, we are closed on Tuesdays",
+      status: 400,
+    });
+  }
+  return next();
+}
+
+async function reservationIsDuringBusinessHours(req, res, next) {
+  if (req.params.reservation_option === "status") {
+    return next();
+  }
+  const { reservation_time } = req.body.data;
+  const timeArray = reservation_time.split(":");
+  const hour = Number(timeArray[0]);
+  const minute = Number(timeArray[1]);
+  console.log(hour);
+  if (hour >= 10) {
+    if (hour === 10) {
+      if (minute <= 30) {
+        return next();
+      }
+    }
+    if (hour <= 21) {
+      if (hour === 21) {
+        if (minute <= 30) {
+          return next();
+        }
+      }
+      return next();
+    }
+  }
+  if (hour <= 10 && minute < 30) {
+    return next({
+      message: "Sorry we are not open yet",
+      status: 400,
+    });
+  }
+  return next({
+    message: "Seating ends at 9:30 PM.",
+    status: 400,
+  });
 }
 
 //CRUDL
 async function list(req, res) {
   const { date } = req.query;
   const data = await reservationService.list(date);
-  console.log(data)
-  res.json( {data} );
+  // console.log(data)
+  res.json({ data });
 }
 
 const create = async (req, res) => {
@@ -165,6 +245,9 @@ module.exports = {
     asyncErrorBoundary(peopleExists),
     asyncErrorBoundary(reservationDateExists),
     asyncErrorBoundary(reservationTimeExists),
+    asyncErrorBoundary(pastReservation),
+    asyncErrorBoundary(reservationOnTuesday),
+    asyncErrorBoundary(reservationIsDuringBusinessHours),
     asyncErrorBoundary(create),
   ],
 };

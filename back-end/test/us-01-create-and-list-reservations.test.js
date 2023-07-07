@@ -3,7 +3,6 @@ const request = require("supertest");
 const app = require("../src/app");
 const knex = require("../src/db/connection");
 
-var seedCount = 0;
 
 describe("US-01 - Create and list reservations", () => {
   beforeAll(() => {
@@ -13,10 +12,17 @@ describe("US-01 - Create and list reservations", () => {
       .then(() => knex.migrate.latest());
   });
 
+  //Issue where my seed data is being duplicated with each subsequent test
   beforeEach(() => {
-    seedCount++;
-    // console.log(seedCount);
     return knex.seed.run();
+  });
+
+  //Created afterEach function since my reservation table and seed data was being deleted everytime I ran my tests
+  afterEach(() => {
+    return knex.migrate
+      .forceFreeMigrationsLock()
+      .then(() => knex.migrate.rollback(null, true))
+      .then(() => knex.migrate.latest())
   });
 
   afterAll(async () => {
