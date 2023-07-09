@@ -1,7 +1,19 @@
 import { useHistory } from "react-router-dom";
+import { cancelReservation } from "../utils/api";
 
 function Reservation({ reservations }) {
   const history = useHistory();
+
+  const cancelHandler = (event) => {
+    event.preventDefault();
+    const abortController = new AbortController();
+    const index = event.target.parentElement.parentElement.getAttribute("index");
+    const confirmation = window.confirm("Do you want to cancel this revservation? This cannot be undone");
+    if(confirmation){
+      cancelReservation(reservations[index], abortController.signal)
+      .then(() => history.push("/"))
+    }
+  }
 
 
   return (
@@ -76,7 +88,7 @@ function Reservation({ reservations }) {
                         <button
                           type="button"
                           className="btn btn-danger m-1 p-4"
-                          onClick={console.log("cancelled")}
+                          onClick={cancelHandler}
                         >
                           Cancel
                         </button>

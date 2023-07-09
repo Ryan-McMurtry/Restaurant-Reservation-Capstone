@@ -132,7 +132,7 @@ async function pastReservation(req, res, next) {
     0,
     1
   );
-  // console.log(reservationDate)
+
   if (reservationDate > today) {
     return next();
   } else {
@@ -157,7 +157,6 @@ async function reservationOnTuesday(req, res, next) {
     0,
     1
   );
-  console.log(reservationDate);
   if (reservationDate.getDay() === 2) {
     return next({
       message: "Sorry, we are closed on Tuesdays",
@@ -175,10 +174,10 @@ async function reservationIsDuringBusinessHours(req, res, next) {
   const timeArray = reservation_time.split(":");
   const hour = Number(timeArray[0]);
   const minute = Number(timeArray[1]);
-  console.log(hour);
+  // console.log(hour);
   if (hour >= 10) {
     if (hour === 10) {
-      if (minute <= 30) {
+      if (minute >= 30) {
         return next();
       }
     }

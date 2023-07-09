@@ -85,4 +85,35 @@ export async function createReservation(reservation, signal) {
   .then(formatReservationTime)
 }
 
+export async function createTable(table, signal){
+  const url = `${API_BASE_URL}/tables`;
+  table.capacity = +table.capacity;
+  return await fetchJson(
+    url,
+    {
+      body: JSON.stringify({ data: table }),
+      headers,
+      method: "POST",
+      signal,
+    },
+    []
+  )
+}
+
+export async function cancelReservation(reservation, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation.reservation_id}/status`;
+  return await fetchJson(
+    url,
+    {
+      body: JSON.stringify({ data: { ...reservation, status: "cancelled" } }),
+      headers,
+      method: "PUT",
+      signal,
+    },
+    []
+  )
+    .then(formatReservationDate)
+    .then(formatReservationTime);
+}
+
 
