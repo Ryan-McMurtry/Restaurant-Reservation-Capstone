@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
+import { createTable } from "../utils/api"
 
 export default function NewTable(){
+
     const initialTable = {
         table_name: "",
         capacity: 0
     };
 
-    const [tableData, setTableData] = useState(...initialTable);
+    const [tableData, setTableData] = useState({...initialTable});
     const [tableError, setTableError] = useState(null);
     const [disableButton, setDisableButton] = useState(false);
     const history = useHistory();
@@ -25,13 +27,23 @@ export default function NewTable(){
         event.preventDefault();
         const abortController = new AbortController();
         setDisableButton(state => !state)
+        createTable(tableData, abortController.signal)
+        .then(() => history.push("/"))
+        .catch(tableError)
+        setDisableButton(state => !state)
+    };
 
+    const cancelHandler = (event) => {
+        event.preventDefault();
+        setDisableButton(state => !state);
+        history.goBack();
     }
 
     return (
       <div>
         {tableError ? <ErrorAlert error={tableError} /> : null}
-        <form>
+        <form onSubmit={submitHandler} onReset={cancelHandler}>
+          <h1>New Table</h1>  
           <div className="form-group">
             <label htmlFor="table_name">Table Name</label>
             <input
