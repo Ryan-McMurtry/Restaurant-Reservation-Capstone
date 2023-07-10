@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { listReservations } from "../utils/api";
+import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import Reservation from "../reservations/Reservation";
 import findDate from "./findDate";
+import Table from "../tables/Table";
 
 /**
  * Defines the dashboard page.
@@ -13,21 +14,39 @@ import findDate from "./findDate";
 function Dashboard() {
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
-  const [dateAugment, setDateAugment] = useState(0)
-  
+  const [dateAugment, setDateAugment] = useState(0);
+  const [tables, setTables] = useState([]);
+  const [tablesError, setTablesError] = useState(null);
 
   const loadDashboard = () => {
     const abortController = new AbortController();
-    const date = findDate(dateAugment)
-    console.log(date)
+    const date = findDate(dateAugment);
+    console.log(date);
     setReservationsError(null);
     listReservations({ date }, abortController.signal)
       .then(setReservations)
       .catch(setReservationsError);
     return () => abortController.abort();
-  }
-  
-  useEffect(loadDashboard, [dateAugment]);
+  };
+
+  const loadTables = () => {
+    const abortController = new AbortController();
+    setTablesError(null);
+    listTables(abortController.signal)
+    .then(setTables)
+    .catch(setTablesError);
+    return () => abortController.abort();
+  };
+
+  const loadBoth = () => {
+    const abortController = new AbortController();
+    loadDashboard();
+    loadTables();
+    return () => abortController.abort();
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(loadBoth, [dateAugment]);
 
   const buttonSetDate = (event) => {
     event.preventDefault();
@@ -80,6 +99,10 @@ function Dashboard() {
             Next
           </button>
         </div>
+      </div>
+      <ErrorAlert error={tablesError} />
+      <div className="tables">
+        <Table tables={tables} />
       </div>
     </main>
   );

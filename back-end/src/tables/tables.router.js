@@ -9,4 +9,4 @@ router
 .put(controller.create)
 .all(methodNotAllowed)
 
-module.exports = router
+module.exports = router;

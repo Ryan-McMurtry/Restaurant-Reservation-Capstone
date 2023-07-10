@@ -80,7 +80,7 @@ function Reservation({ reservations }) {
                         </a>
                         <a
                           className="btn btn-primary m-1 p-4"
-                          href=""
+                          href={`/reservations/${reservation_id}/seat`}
                           role="button"
                         >
                           Seat

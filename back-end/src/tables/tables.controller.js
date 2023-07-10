@@ -19,5 +19,5 @@ async function create(req, res){
 
 module.exports = {
     list: [asyncErrorBoundary(list)],
-    create: [asyncErrorBoundary(create)]
+    create: [asyncErrorBoundary(create)],
 }
