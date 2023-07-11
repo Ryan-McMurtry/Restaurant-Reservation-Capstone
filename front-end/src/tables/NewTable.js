@@ -11,7 +11,6 @@ export default function NewTable() {
 
   const [tableData, setTableData] = useState({ ...initialTable });
   const [tableError, setTableError] = useState(null);
-  //   const [disableButton, setDisableButton] = useState(false);
   const history = useHistory();
 
   const changeHandler = (event) => {
@@ -25,16 +24,13 @@ export default function NewTable() {
   const submitHandler = (event) => {
     event.preventDefault();
     const abortController = new AbortController();
-    // setDisableButton((state) => !state);
     createTable(tableData, abortController.signal)
       .then(() => history.push("/"))
       .catch(setTableError);
-    // setDisableButton((state) => !state);
   };
 
   const cancelHandler = (event) => {
     event.preventDefault();
-    // setDisableButton((state) => !state);
     history.goBack();
   };
 
@@ -70,7 +66,6 @@ export default function NewTable() {
         <button
           type="submit"
           className="btn btn-primary m-1"
-          //   disabled={disableButton}
         >
           Submit
         </button>
@@ -78,7 +73,6 @@ export default function NewTable() {
         <button
           type="reset"
           className="btn btn-danger m-1"
-          //   disabled={disableButton}
         >
           Cancel
         </button>

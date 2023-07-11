@@ -12,7 +12,43 @@ const create = (newTable) => {
     .then((createdTable) => createdTable[0])
 }
 
+const read = (table_id) => {
+    return knex("tables")
+    .select("*")
+    .where({table_id})
+    .first();
+}
+
+const readRes = (reservation_id) => {
+    return knex("tables")
+    .where({reservation_id})
+    .first();
+}
+
+const readCapacity = (capacity, table_id) => {
+    return knex("tables")
+    .where({capacity})
+    .where({table_id})
+}
+
+const update = async(updatedTable, updatedReservation) => {
+    const {table_id, reservation_id} = updatedTable;
+    await knex("tables")
+    .where({table_id})
+    .update(updatedTable, "*")
+
+    await knex("reservations")
+    .where({reservation_id})
+    .update(updatedReservation, "*")
+
+    return read(table_id)
+}
+
 module.exports ={
     list,
-    create
+    create,
+    read,
+    update,
+    readRes,
+    readCapacity
 }

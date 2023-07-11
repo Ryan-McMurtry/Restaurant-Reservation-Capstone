@@ -101,7 +101,7 @@ function Dashboard() {
         </div>
       </div>
       <ErrorAlert error={tablesError} />
-      <div className="tables">
+      <div className="tables mt-5">
         <Table tables={tables} />
       </div>
     </main>
