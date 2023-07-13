@@ -11,13 +11,20 @@ describe("US-04 - Seat reservation", () => {
       .then(() => knex.migrate.latest());
   });
 
+  afterEach(() => {
+    return knex.migrate
+      .forceFreeMigrationsLock()
+      .then(() => knex.migrate.rollback(null, true))
+      .then(() => knex.migrate.latest());
+  });
+
   beforeEach(() => {
     return knex.seed.run();
   });
 
-  afterAll(async () => {
-    return await knex.migrate.rollback(null, true).then(() => knex.destroy());
-  });
+  // afterAll(async () => {
+  //   return await knex.migrate.rollback(null, true).then(() => knex.destroy());
+  // });
 
   describe("Create and list tables", () => {
     describe("GET /tables/:table_id", () => {

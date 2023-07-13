@@ -1,5 +1,11 @@
 const knex = require("../db/connection");
 
+
+const readAll = (table_id) => {
+    return knex("tables")
+    .join("reservations", "tables.reservation_id", "reservations.reservation_id")
+    .where({table_id})
+}
 const list = () => {
     return knex("tables")
     .select("*")
@@ -44,11 +50,24 @@ const update = async(updatedTable, updatedReservation) => {
     return read(table_id)
 }
 
+// const destroy = async (openedTable, finishedReservation) => {
+//   const { table_id } = openedTable;
+//   const { reservation_id } = finishedReservation;
+//   await knex("tables").where({ table_id }).update(openedTable, "*");
+
+//   await knex("reservations")
+//     .where({ reservation_id })
+//     .update(finishedReservation, "*");
+
+//   return readAll(table_id);
+// };
+
 module.exports ={
     list,
     create,
     read,
     update,
     readRes,
-    readCapacity
+    readCapacity,
+    // destroy
 }
