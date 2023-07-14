@@ -14,6 +14,20 @@ async function dataExists(req, res, next) {
   }
 }
 
+async function reservationIdExists(req, res, next){
+  const { reservation_id } = req.params;
+  const reservationData = await reservationService.read(Number(reservation_id));
+  if(reservation_id && reservation_id !== "" && reservationData){
+    res.locals.reservation = reservationData;
+    return next();
+  } else{
+    return next({
+      message: `The reservation with reservation id: ${reservation_id} does not exist`,
+      status: 404,
+    })
+  }
+}
+
 async function firstNameExists(req, res, next) {
   if (req.params.reservation_option === "status") {
     return next();
@@ -234,6 +248,10 @@ const create = async (req, res) => {
   res.status(201).json({ data: newReservation });
 };
 
+async function read(req, res){
+  res.status(200).json({data: res.locals.reservation})
+}
+
 module.exports = {
   list: [asyncErrorBoundary(list)],
   create: [
@@ -249,4 +267,5 @@ module.exports = {
     asyncErrorBoundary(reservationIsDuringBusinessHours),
     asyncErrorBoundary(create),
   ],
+  read: [asyncErrorBoundary(reservationIdExists), asyncErrorBoundary(read)]
 };

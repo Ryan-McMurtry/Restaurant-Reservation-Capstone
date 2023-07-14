@@ -9,7 +9,7 @@ router
 .all(methodNotAllowed);
 
 router
-.route("/:table_id/:table_option")
+.route("/:table_id/seat")
 .put(controller.update)
 .all(methodNotAllowed)
 
