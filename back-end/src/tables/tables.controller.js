@@ -5,7 +5,8 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 async function tableExists(req, res, next) {
   const { table_id } = req.params;
-  const data = await tableService.read(Number(table_id));
+  const data = await tableService.read(table_id);
+
   if (data) {
     res.locals.table = data;
     return next();
@@ -40,7 +41,7 @@ async function tableNameExists(req, res, next) {
   }
 }
 
-async function reservationIdExists(res, req, next) {
+async function reservationIdExists(req, res, next) {
   const { reservation_id } = req.body.data;
 
   if (
@@ -64,23 +65,36 @@ async function reservationIdExists(res, req, next) {
     } else {
       return next({
         message: `Reservation ${reservation_id} does not exist.`,
-        status: 400,
+        status: 404,
       });
     }
   } else {
     return next({
-        message: "Please enter an existing reservation_id",
-        status: 400
-    })
+      message: "Please enter an existing reservation_id",
+      status: 400,
+    });
+  }
+}
+
+async function capacityExists(req, res, next) {
+  const { capacity } = req.body.data;
+  if (capacity && typeof capacity == "number" && capacity > 0) {
+    return next();
+  } else {
+    return next({
+      message: "The table must have a capacity greater than zero",
+      status: 400,
+    });
   }
 }
 
 async function validateCapacity(req, res, next) {
   const { table_option } = req.params;
+  console.log(table_option)
   const { people } = res.locals.reservation;
   const { status, capacity } = res.locals.table;
-  if (table_option === "seated") {
-    if (status === "open") {
+  if (table_option === "seat") {
+    if (status === "Free") {
       if (capacity >= people) {
         return next();
       } else {
@@ -115,7 +129,7 @@ async function create(req, res) {
   const newTable = {
     table_name: table_name,
     capacity: capacity,
-    status: "open",
+    status: "Free",
   };
   const createdTable = await tableService.create(newTable);
   res.status(201).json({ data: createdTable });
@@ -142,6 +156,7 @@ async function update(req, res) {
     tableUpdate,
     reservationUpdate
   );
+  
   res.json({ data: updatedTable });
 }
 
@@ -149,7 +164,7 @@ module.exports = {
   create: [
     asyncErrorBoundary(dataExists),
     asyncErrorBoundary(tableNameExists),
-    asyncErrorBoundary(validateCapacity),
+    asyncErrorBoundary(capacityExists),
     asyncErrorBoundary(create),
   ],
   read: [asyncErrorBoundary(tableExists), asyncErrorBoundary(read)],

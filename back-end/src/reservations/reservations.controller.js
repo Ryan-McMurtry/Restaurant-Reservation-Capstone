@@ -220,7 +220,6 @@ async function reservationIsDuringBusinessHours(req, res, next) {
 async function list(req, res) {
   const { date } = req.query;
   const data = await reservationService.list(date);
-  // console.log(data)
   res.json({ data });
 }
 
@@ -252,6 +251,22 @@ async function read(req, res){
   res.status(200).json({data: res.locals.reservation})
 }
 
+async function update(req, res){
+  const { reservation_option } = req.params;
+  if(reservation_option === "status"){
+    const updatedReservation = {
+      ...res.locals.reservation,
+      status: req.body.status,
+    }
+    const statusUpdate = await reservationService.update(updatedReservation);
+    res.status(200).json({ data: statusUpdate });
+  } else{
+    const updatedReservation = { ...req.body.data };
+    const resUpdate = await reservationService.update(updatedReservation);
+    res.status(200).json({ data: resUpdate })
+  }
+}
+
 module.exports = {
   list: [asyncErrorBoundary(list)],
   create: [
@@ -267,5 +282,19 @@ module.exports = {
     asyncErrorBoundary(reservationIsDuringBusinessHours),
     asyncErrorBoundary(create),
   ],
-  read: [asyncErrorBoundary(reservationIdExists), asyncErrorBoundary(read)]
+  read: [asyncErrorBoundary(reservationIdExists), asyncErrorBoundary(read)],
+  update: [
+    asyncErrorBoundary(reservationIdExists),
+    asyncErrorBoundary(dataExists),
+    asyncErrorBoundary(firstNameExists),
+    asyncErrorBoundary(lastNameExists),
+    asyncErrorBoundary(mobileNumberExists),
+    asyncErrorBoundary(peopleExists),
+    asyncErrorBoundary(reservationDateExists),
+    asyncErrorBoundary(reservationTimeExists),
+    asyncErrorBoundary(pastReservation),
+    asyncErrorBoundary(reservationOnTuesday),
+    asyncErrorBoundary(reservationIsDuringBusinessHours),
+    asyncErrorBoundary(update)
+  ],
 };

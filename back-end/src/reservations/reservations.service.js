@@ -23,9 +23,21 @@ const read = (reservation_id) => {
     .first()
 }
 
+const update = async (updatedReservation) => {
+    const { reservation_id } = updatedReservation;
+    await knex("reservations")
+    .where({reservation_id})
+    .update(updatedReservation, "*")
+    
+
+    return read(reservation_id)
+}
+
+
 
 module.exports = {
     list,
     create,
-    read
+    read,
+    update
 }

@@ -70,7 +70,7 @@ function Reservation({ reservations }) {
                   <td className="border p-4">{status}</td>
                   <td>
                     {status === "booked" ? (
-                      <div classname="col">
+                      <div className="col">
                         <a
                           className="btn btn-primary m-1 p-4"
                           href=""
