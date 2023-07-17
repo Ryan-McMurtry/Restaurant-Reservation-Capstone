@@ -15,9 +15,16 @@ describe("US-06 - Reservation status", () => {
     return knex.seed.run();
   });
 
-  afterAll(async () => {
-    return await knex.migrate.rollback(null, true).then(() => knex.destroy());
+  afterEach(() => {
+    return knex.migrate
+      .forceFreeMigrationsLock()
+      .then(() => knex.migrate.rollback(null, true))
+      .then(() => knex.migrate.latest());
   });
+
+  // afterAll(async () => {
+  //   return await knex.migrate.rollback(null, true).then(() => knex.destroy());
+  // });
 
   describe("POST /reservations", () => {
     test("returns 201 if status is 'booked'", async () => {
@@ -286,6 +293,7 @@ describe("US-06 - Reservation status", () => {
 });
 
 function asDateString(date) {
+  date = new Date();
   return `${date.getFullYear().toString(10)}-${(date.getMonth() + 1)
     .toString(10)
     .padStart(2, "0")}-${date.getDate().toString(10).padStart(2, "0")}`;

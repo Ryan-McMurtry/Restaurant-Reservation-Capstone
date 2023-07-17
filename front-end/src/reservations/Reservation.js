@@ -58,7 +58,7 @@ function Reservation({ reservations }) {
             people,
             status,
           }) => {
-            
+            if(status !== "finished"){
               return (
                 <tr key={reservation_id}>
                   <td className="border p-4">{first_name}</td>
@@ -98,6 +98,8 @@ function Reservation({ reservations }) {
                 </tr>
               );
           }
+          return null
+        }
         )}
       </tbody>
     </table>

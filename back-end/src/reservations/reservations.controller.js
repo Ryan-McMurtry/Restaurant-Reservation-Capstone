@@ -216,11 +216,63 @@ async function reservationIsDuringBusinessHours(req, res, next) {
   });
 }
 
+async function statusCheckPOST(req, res, next){
+  if(req.body.data.status){
+    const { status } = req.body.data;
+    if(status === "booked"){
+      return next()
+    } else{
+      return next({
+        message: `Status must be booked and not ${status}`,
+        status:400
+      })
+    }
+  } else {
+    return next();
+  }
+}
+
+async function statusCheckPUT(req, res, next){
+  const { status } = req.body.data;
+  const stat = 
+  status === "booked"
+  ? true : status === "seated"
+  ? true : status === "finished"
+  ? true : status === "cancelled"
+  ? true : false;
+
+  if(stat){
+    return next();
+  } else{
+    return next({
+      message: `Cannot update a reservation with a status of ${status}`,
+      status: 400
+    })
+  }
+}
+
+async function statusCheckRes(req, res, next){
+  const { status } = res.locals.reservation;
+  if(status === "finished"){
+    return next({
+      message: "A finished reservation cannot be updated",
+      status: 400
+    })
+  } else{
+    return next();
+  }
+}
+
 //CRUDL
 async function list(req, res) {
-  const { date } = req.query;
+  const { mobile_number, date } = req.query;
+  if(mobile_number){
+    const data = await reservationService.search(mobile_number);
+    res.json({data})
+  } else{
   const data = await reservationService.list(date);
   res.json({ data });
+  }
 }
 
 const create = async (req, res) => {
@@ -256,7 +308,7 @@ async function update(req, res){
   if(reservation_option === "status"){
     const updatedReservation = {
       ...res.locals.reservation,
-      status: req.body.status,
+      status: req.body.data.status,
     }
     const statusUpdate = await reservationService.update(updatedReservation);
     res.status(200).json({ data: statusUpdate });
@@ -280,6 +332,7 @@ module.exports = {
     asyncErrorBoundary(pastReservation),
     asyncErrorBoundary(reservationOnTuesday),
     asyncErrorBoundary(reservationIsDuringBusinessHours),
+    asyncErrorBoundary(statusCheckPOST),
     asyncErrorBoundary(create),
   ],
   read: [asyncErrorBoundary(reservationIdExists), asyncErrorBoundary(read)],
@@ -295,6 +348,8 @@ module.exports = {
     asyncErrorBoundary(pastReservation),
     asyncErrorBoundary(reservationOnTuesday),
     asyncErrorBoundary(reservationIsDuringBusinessHours),
+    asyncErrorBoundary(statusCheckPUT),
+    asyncErrorBoundary(statusCheckRes),
     asyncErrorBoundary(update)
   ],
 };

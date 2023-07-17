@@ -11,6 +11,7 @@ router
 router
 .route("/:table_id/:table_option")
 .put(controller.update)
+.delete(controller.delete)
 .all(methodNotAllowed)
 
 router

@@ -90,11 +90,10 @@ async function capacityExists(req, res, next) {
 
 async function validateCapacity(req, res, next) {
   const { table_option } = req.params;
-  console.log(table_option)
   const { people } = res.locals.reservation;
   const { status, capacity } = res.locals.table;
   if (table_option === "seat") {
-    if (status === "Free") {
+    if (status === "free") {
       if (capacity >= people) {
         return next();
       } else {
@@ -118,6 +117,19 @@ async function validateCapacity(req, res, next) {
   }
 }
 
+
+async function notOccupied(req, res, next){
+  const { status } = res.locals.table;
+  if(status === "occupied"){
+    return next();
+  } else{
+    return next({
+      message: "Table is not occupied",
+      status: 400
+    })
+  }
+}
+
 //CRUDL
 async function list(req, res) {
   const response = await tableService.list();
@@ -129,7 +141,7 @@ async function create(req, res) {
   const newTable = {
     table_name: table_name,
     capacity: capacity,
-    status: "Free",
+    status: "free",
   };
   const createdTable = await tableService.create(newTable);
   res.status(201).json({ data: createdTable });
@@ -160,6 +172,21 @@ async function update(req, res) {
   res.json({ data: updatedTable });
 }
 
+async function destroy(req, res){
+  const { reservation_id } = res.locals.table;
+  const newTable = {
+    ...res.locals.table,
+    status: "free",
+  };
+  const reservation = await tableService.readRes(reservation_id)
+  const updatedReservation = {
+    ...reservation,
+    status: "finished",
+  }
+  const openedTable = await tableService.destroy(newTable, updatedReservation);
+  res.status(200).json({ data: openedTable })
+}
+
 module.exports = {
   create: [
     asyncErrorBoundary(dataExists),
@@ -174,6 +201,11 @@ module.exports = {
     asyncErrorBoundary(reservationIdExists),
     asyncErrorBoundary(validateCapacity),
     asyncErrorBoundary(update),
+  ],
+  delete: [
+    asyncErrorBoundary(tableExists),
+    asyncErrorBoundary(notOccupied),
+    asyncErrorBoundary(destroy),
   ],
   list: [asyncErrorBoundary(list)],
 };

@@ -1,11 +1,18 @@
 import { useState } from "react"
+import { deleteTable } from "../utils/api"
 import ErrorAlert from "../layout/ErrorAlert"
 
 export default function Table({tables}) {
 
     const [tablesError, setTablesError] = useState(null)
     const finishHandler = (event) => {
-
+      const abortController = new AbortController();
+      const confirmation = window.confirm("Is this table ready to seat new guests? This cannot be undone.")
+      if(confirmation){
+        deleteTable(Number(event.target.value), abortController.signal)
+        .catch(setTablesError)
+      }
+      return () => abortController.abort()
     }
 
     return (

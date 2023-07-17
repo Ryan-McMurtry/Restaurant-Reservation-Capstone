@@ -33,11 +33,27 @@ const update = async (updatedReservation) => {
     return read(reservation_id)
 }
 
+const search = (mobile_number) => {
+    return knex("reservations")
+    .select("*")
+    .orderBy("reservation_date")
+    .whereRaw(
+        "translate(mobile_number, '() -', '') like ?",
+        `%${mobile_number.replace(/\D/g, "")}%`
+    )
+}
+
+const destroy = () => {
+    return null;
+}
+
 
 
 module.exports = {
     list,
     create,
     read,
-    update
+    update,
+    search,
+    destroy
 }
