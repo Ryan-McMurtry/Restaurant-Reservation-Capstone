@@ -7,14 +7,17 @@ function Reservation({ reservations }) {
   const cancelHandler = (event) => {
     event.preventDefault();
     const abortController = new AbortController();
-    const index = event.target.parentElement.parentElement.getAttribute("index");
-    const confirmation = window.confirm("Do you want to cancel this revservation? This cannot be undone");
-    if(confirmation){
-      cancelReservation(reservations[index], abortController.signal)
-      .then(() => history.push("/"))
+    const index =
+      event.target.parentElement.parentElement.getAttribute("index");
+    const confirmation = window.confirm(
+      "Do you want to cancel this reservation? This cannot be undone"
+    );
+    if (confirmation) {
+      cancelReservation(reservations[index], abortController.signal).then(() =>
+        history.push("/")
+      );
     }
-  }
-
+  };
 
   return (
     <table className=" table text-center">
@@ -58,7 +61,7 @@ function Reservation({ reservations }) {
             people,
             status,
           }) => {
-            if(status !== "finished"){
+            if (status !== "finished") {
               return (
                 <tr key={reservation_id}>
                   <td className="border p-4">{first_name}</td>
@@ -73,7 +76,7 @@ function Reservation({ reservations }) {
                       <div className="col">
                         <a
                           className="btn btn-primary m-1 p-4"
-                          href=""
+                          href={`/reservations/${reservation_id}/edit`}
                           role="button"
                         >
                           Edit
@@ -97,9 +100,9 @@ function Reservation({ reservations }) {
                   </td>
                 </tr>
               );
+            }
+            return null;
           }
-          return null
-        }
         )}
       </tbody>
     </table>

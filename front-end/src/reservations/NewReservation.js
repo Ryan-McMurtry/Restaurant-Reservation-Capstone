@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { createReservation } from "../utils/api";
+import { createReservation, updateReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
-export default function NewReservation() {
-  let initialState = {
+export default function NewReservation({reservation}) {
+
+  let initialState = reservation ? reservation : {
     first_name: "",
     last_name: "",
     mobile_number: "",
@@ -29,6 +30,11 @@ export default function NewReservation() {
   const submitHandler = (event) => {
     event.preventDefault();
     const abortController = new AbortController();
+    if(reservation){
+      updateReservation(reservationData, abortController.signal)
+      .then(() => history.push("/"))
+      .catch(setResError)
+    }
     createReservation(reservationData, abortController.signal)
       .then(() => history.push("/"))
       .catch(setResError);
@@ -45,7 +51,7 @@ export default function NewReservation() {
 
   return (
     <div>
-      <h1>New Reservation</h1>
+      {reservation ? <h1>Edit Reservation</h1> : <h1>New Reservation</h1>}
       <ErrorAlert error={createResError} />
       <form onSubmit={submitHandler} onReset = {cancelHandler}>
         <div className="form-group">

@@ -22,9 +22,9 @@ describe("US-06 - Reservation status", () => {
       .then(() => knex.migrate.latest());
   });
 
-  // afterAll(async () => {
-  //   return await knex.migrate.rollback(null, true).then(() => knex.destroy());
-  // });
+  afterAll(async () => {
+    return await knex.migrate.rollback(null, true).then(() => knex.destroy());
+  });
 
   describe("POST /reservations", () => {
     test("returns 201 if status is 'booked'", async () => {

@@ -22,9 +22,9 @@ describe("US-04 - Seat reservation", () => {
     return knex.seed.run();
   });
 
-  // afterAll(async () => {
-  //   return await knex.migrate.rollback(null, true).then(() => knex.destroy());
-  // });
+  afterAll(async () => {
+    return await knex.migrate.rollback(null, true).then(() => knex.destroy());
+  });
 
   describe("Create and list tables", () => {
     describe("GET /tables/:table_id", () => {
