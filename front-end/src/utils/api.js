@@ -106,20 +106,18 @@ export async function updateReservation(reservation, signal) {
     .then(formatReservationTime);
 }
 
-export async function cancelReservation(reservation, signal) {
-  const url = `${API_BASE_URL}/reservations/${reservation.reservation_id}/status`;
-  return await fetchJson(
-    url,
-    {
-      body: JSON.stringify({ data: { ...reservation, status: "cancelled" } }),
-      headers,
-      method: "PUT",
-      signal,
-    },
-    []
-  )
-    .then(formatReservationDate)
-    .then(formatReservationTime);
+
+export async function updateStatus(reservation_id, status, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}/status`
+
+  const options = {
+    method: "PUT",
+    headers,
+    signal,
+    body: JSON.stringify({ data: { status: status } }),
+  }
+
+  return await fetchJson(url, options);
 }
 
 export async function listTables(signal) {
