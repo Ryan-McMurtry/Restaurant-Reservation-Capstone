@@ -46,9 +46,9 @@ function Routes() {
       <Route path="/reservations/:reservation_id/seat">
         <Seat />
       </Route>
-      <Route path="*">
+      {/* <Route path="*">
         <NotFound />
-      </Route>
+      </Route> */}
     </Switch>
   );
 }
