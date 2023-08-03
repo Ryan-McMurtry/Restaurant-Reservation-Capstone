@@ -16,7 +16,7 @@ export default function Cancel({ reservation_id }) {
         "cancelled",
         abortController.signal
       );
-      history.go(0);
+      history.push("/");
 
       return () => abortController.abort();
     }
