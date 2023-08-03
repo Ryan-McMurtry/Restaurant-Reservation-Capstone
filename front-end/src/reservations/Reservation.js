@@ -1,4 +1,5 @@
 import Cancel from "../reservations/Cancel";
+import { Link } from "react-router-dom";
 
 function Reservation({ reservations }) {
   return (
@@ -56,20 +57,24 @@ function Reservation({ reservations }) {
                   <td>
                     {status === "booked" ? (
                       <div className="col">
-                        <a
-                          className="btn btn-primary m-1 p-4"
-                          href={`/reservations/edit/${reservation_id}`}
-                          role="button"
+                        <Link
+                          to={{
+                            pathname: `/reservations/${reservation_id}/edit`,
+                          }}
                         >
-                          Edit
-                        </a>
-                        <a
-                          className="btn btn-primary m-1 p-4"
-                          href={`/reservations/seat/${reservation_id}`}
-                          role="button"
+                          <button className="btn btn-primary m-1 p-4">
+                            Edit
+                          </button>
+                        </Link>
+                        <Link
+                          to={{
+                            pathname: `/reservations/${reservation_id}/seat`,
+                          }}
                         >
-                          Seat
-                        </a>
+                          <button className="btn btn-primary m-1 p-4">
+                            Seat
+                          </button>
+                        </Link>
                         <Cancel reservation_id={reservation_id} />
                       </div>
                     ) : null}
