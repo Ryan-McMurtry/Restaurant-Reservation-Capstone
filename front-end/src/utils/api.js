@@ -106,16 +106,15 @@ export async function updateReservation(reservation, signal) {
     .then(formatReservationTime);
 }
 
-
 export async function updateStatus(reservation_id, status, signal) {
-  const url = `${API_BASE_URL}/reservations/${reservation_id}/status`
+  const url = `${API_BASE_URL}/reservations/${reservation_id}/status`;
 
   const options = {
     method: "PUT",
     headers,
     signal,
     body: JSON.stringify({ data: { status: status } }),
-  }
+  };
 
   return await fetchJson(url, options);
 }
@@ -142,7 +141,6 @@ export async function createTable(table, signal) {
 
 export async function updateTable(table_id, reservation_id, signal) {
   const url = `${API_BASE_URL}/tables/${table_id}/seat`;
-  console.log("working");
   return await fetchJson(
     url,
     {

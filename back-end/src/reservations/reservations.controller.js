@@ -267,11 +267,11 @@ async function statusCheckRes(req, res, next){
 async function list(req, res) {
   const { mobile_number, date } = req.query;
   if(mobile_number){
-    const data = await reservationService.search(mobile_number);
-    res.json({data})
+    const response = await reservationService.search(mobile_number);
+    res.status(201).json({data: response})
   } else{
-  const data = await reservationService.list(date);
-  res.json({ data });
+  const response = await reservationService.list(date);
+  res.status(201).json({ data: response });
   }
 }
 

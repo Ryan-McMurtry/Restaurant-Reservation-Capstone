@@ -1,12 +1,6 @@
-import { useHistory } from "react-router-dom";
-import { updateStatus } from "../utils/api";
-import Cancel from "../reservations/Cancel"
-
+import Cancel from "../reservations/Cancel";
 
 function Reservation({ reservations }) {
-  const history = useHistory();
-
-
   return (
     <table className=" table text-center">
       <thead>
@@ -76,7 +70,7 @@ function Reservation({ reservations }) {
                         >
                           Seat
                         </a>
-                        <a><Cancel reservation_id={reservation_id} /></a>
+                        <Cancel reservation_id={reservation_id} />
                       </div>
                     ) : null}
                   </td>
