@@ -9,11 +9,17 @@ function Edit() {
   const [reservation, setReservation] = useState(null);
   const [resError, setResError] = useState(null);
 
-  const loadReservation = () => {
+  const loadReservation = async () => {
     const abortController = new AbortController();
-    readReservation(reservation_id, abortController.signal)
-      .then(setReservation)
-      .catch(setResError);
+    try {
+      const response = await readReservation(
+        reservation_id,
+        abortController.signal
+      );
+      setReservation(response);
+    } catch (error) {
+      setResError(error);
+    }
     return () => abortController.abort();
   };
 
