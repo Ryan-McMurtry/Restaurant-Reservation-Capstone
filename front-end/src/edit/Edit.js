@@ -9,21 +9,23 @@ function Edit() {
   const [reservation, setReservation] = useState(null);
   const [resError, setResError] = useState(null);
 
-  const loadReservation = async () => {
-    const abortController = new AbortController();
-    try {
-      const response = await readReservation(
-        reservation_id,
-        abortController.signal
-      );
-      setReservation(response);
-    } catch (error) {
-      setResError(error);
-    }
-    return () => abortController.abort();
-  };
+  // const loadReservation = () => {
+  //   const abortController = new AbortController();
+  //   readReservation(reservation_id, abortController.signal)
+  //     .then(setReservation)
+  //     .catch(setResError);
+  //   return () => abortController.abort();
+  // };
 
-  useEffect(loadReservation, [reservation_id]);
+  useEffect(() => {
+    async function loadReservation() {
+      const abortController = new AbortController();
+      const response = await readReservation(reservation_id, abortController.signal)
+      setReservation(response);
+      return () => abortController.abort();
+    }
+    loadReservation();
+  }, [reservation_id]);
 
   return (
     <div>
