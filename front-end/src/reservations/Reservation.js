@@ -58,14 +58,14 @@ function Reservation({ reservations }) {
                       <div className="col">
                         <a
                           className="btn btn-primary m-1 p-4"
-                          href={`/reservations/${reservation_id}/edit`}
+                          href={`/reservations/edit/${reservation_id}`}
                           role="button"
                         >
                           Edit
                         </a>
                         <a
                           className="btn btn-primary m-1 p-4"
-                          href={`/reservations/${reservation_id}/seat`}
+                          href={`/reservations/seat/${reservation_id}`}
                           role="button"
                         >
                           Seat
