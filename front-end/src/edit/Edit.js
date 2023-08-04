@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { readReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-import NewReservation from "../reservations/NewReservation";
+import ReservationForm from "../reservations/ReservationForm";
 
 function Edit() {
   const { reservation_id } = useParams();
@@ -23,7 +23,7 @@ function Edit() {
     <div>
       <ErrorAlert error={resError} />
       {reservation ? (
-        <NewReservation reservation={reservation} />
+        <ReservationForm reservation={reservation} />
       ) : (
         <p>Loading...</p>
       )}

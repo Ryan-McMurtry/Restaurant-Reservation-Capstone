@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { createReservation, updateReservation } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 
-export default function NewReservation({reservation}) {
+export default function ReservationForm({reservation}) {
 
   let initialState = reservation ? reservation : {
     first_name: "",
@@ -34,11 +34,11 @@ export default function NewReservation({reservation}) {
       updateReservation(reservationData, abortController.signal)
       .then(() => history.push("/"))
       .catch(setResError)
-    }
-    createReservation(reservationData, abortController.signal)
+    } else{
+      createReservation(reservationData, abortController.signal)
       .then(() => history.push("/"))
       .catch(setResError);
-
+    }
     return () => abortController.abort();
   };
   

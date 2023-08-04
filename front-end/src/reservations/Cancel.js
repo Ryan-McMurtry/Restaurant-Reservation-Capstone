@@ -20,7 +20,7 @@ export default function Cancel({ reservation_id }) {
 
       return () => abortController.abort();
     }
-  }
+  };
 
   return (
     <button

@@ -14,17 +14,17 @@ async function dataExists(req, res, next) {
   }
 }
 
-async function reservationIdExists(req, res, next){
+async function reservationIdExists(req, res, next) {
   const { reservation_id } = req.params;
   const reservationData = await reservationService.read(Number(reservation_id));
-  if(reservation_id && reservation_id !== "" && reservationData){
+  if (reservation_id && reservation_id !== "" && reservationData) {
     res.locals.reservation = reservationData;
     return next();
-  } else{
+  } else {
     return next({
       message: `The reservation with reservation id: ${reservation_id} does not exist`,
       status: 404,
-    })
+    });
   }
 }
 
@@ -63,11 +63,30 @@ async function mobileNumberExists(req, res, next) {
     return next();
   }
   const { mobile_number } = req.body.data;
-  if (mobile_number && mobile_number !== "") {
+  if (
+    mobile_number &&
+    mobile_number !== "" 
+  ) {
     return next();
   } else {
     return next({
       message: "Body of Data must contain mobile_number",
+      status: 400,
+    });
+  }
+}
+
+async function mobileNumberIsANumber(req,res,next){
+  if (req.params.reservation_option === "status") {
+    return next();
+  }
+  const { mobile_number } = req.body.data;
+  const numberRegex = new RegExp(/^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/);
+  if (mobile_number.match(numberRegex)) {
+    return next();
+  } else {
+    return next({
+      message: "mobile_number must be a number",
       status: 400,
     });
   }
@@ -78,7 +97,9 @@ async function peopleExists(req, res, next) {
     return next();
   }
   const { people } = req.body.data;
-  if (people && typeof people === "number" && people > 0) {
+  if (people && people > 0) {
+    return next();
+  } else if (typeof people === "number") {
     return next();
   } else {
     return next({
@@ -216,49 +237,53 @@ async function reservationIsDuringBusinessHours(req, res, next) {
   });
 }
 
-async function statusCheckPOST(req, res, next){
-  if(req.body.data.status){
+async function statusCheckPOST(req, res, next) {
+  if (req.body.data.status) {
     const { status } = req.body.data;
-    if(status === "booked"){
-      return next()
-    } else{
+    if (status === "booked") {
+      return next();
+    } else {
       return next({
         message: `Status must be booked and not ${status}`,
-        status:400
-      })
+        status: 400,
+      });
     }
   } else {
     return next();
   }
 }
 
-async function statusCheckPUT(req, res, next){
+async function statusCheckPUT(req, res, next) {
   const { status } = req.body.data;
-  const stat = 
-  status === "booked"
-  ? true : status === "seated"
-  ? true : status === "finished"
-  ? true : status === "cancelled"
-  ? true : false;
+  const stat =
+    status === "booked"
+      ? true
+      : status === "seated"
+      ? true
+      : status === "finished"
+      ? true
+      : status === "cancelled"
+      ? true
+      : false;
 
-  if(stat){
+  if (stat) {
     return next();
-  } else{
+  } else {
     return next({
       message: `Cannot update a reservation with a status of ${status}`,
-      status: 400
-    })
+      status: 400,
+    });
   }
 }
 
-async function statusCheckRes(req, res, next){
+async function statusCheckRes(req, res, next) {
   const { status } = res.locals.reservation;
-  if(status === "finished"){
+  if (status === "finished") {
     return next({
       message: "A finished reservation cannot be updated",
-      status: 400
-    })
-  } else{
+      status: 400,
+    });
+  } else {
     return next();
   }
 }
@@ -266,12 +291,12 @@ async function statusCheckRes(req, res, next){
 //CRUDL
 async function list(req, res) {
   const { mobile_number, date } = req.query;
-  if(mobile_number){
+  if (mobile_number) {
     const response = await reservationService.search(mobile_number);
-    res.status(201).json({data: response})
-  } else{
-  const response = await reservationService.list(date);
-  res.status(201).json({ data: response });
+    res.status(201).json({ data: response });
+  } else {
+    const response = await reservationService.list(date);
+    res.status(201).json({ data: response });
   }
 }
 
@@ -299,23 +324,23 @@ const create = async (req, res) => {
   res.status(201).json({ data: newReservation });
 };
 
-async function read(req, res){
-  res.status(200).json({data: res.locals.reservation})
+async function read(req, res) {
+  res.status(200).json({ data: res.locals.reservation });
 }
 
-async function update(req, res){
+async function update(req, res) {
   const { reservation_option } = req.params;
-  if(reservation_option === "status"){
+  if (reservation_option === "status") {
     const updatedReservation = {
       ...res.locals.reservation,
       status: req.body.data.status,
-    }
+    };
     const statusUpdate = await reservationService.update(updatedReservation);
     res.status(200).json({ data: statusUpdate });
-  } else{
+  } else {
     const updatedReservation = { ...req.body.data };
     const resUpdate = await reservationService.update(updatedReservation);
-    res.status(200).json({ data: resUpdate })
+    res.status(200).json({ data: resUpdate });
   }
 }
 
@@ -326,6 +351,7 @@ module.exports = {
     asyncErrorBoundary(firstNameExists),
     asyncErrorBoundary(lastNameExists),
     asyncErrorBoundary(mobileNumberExists),
+    asyncErrorBoundary(mobileNumberIsANumber),
     asyncErrorBoundary(peopleExists),
     asyncErrorBoundary(reservationDateExists),
     asyncErrorBoundary(reservationTimeExists),
@@ -342,6 +368,7 @@ module.exports = {
     asyncErrorBoundary(firstNameExists),
     asyncErrorBoundary(lastNameExists),
     asyncErrorBoundary(mobileNumberExists),
+    asyncErrorBoundary(mobileNumberIsANumber),
     asyncErrorBoundary(peopleExists),
     asyncErrorBoundary(reservationDateExists),
     asyncErrorBoundary(reservationTimeExists),
@@ -350,6 +377,6 @@ module.exports = {
     asyncErrorBoundary(reservationIsDuringBusinessHours),
     asyncErrorBoundary(statusCheckPUT),
     asyncErrorBoundary(statusCheckRes),
-    asyncErrorBoundary(update)
+    asyncErrorBoundary(update),
   ],
 };

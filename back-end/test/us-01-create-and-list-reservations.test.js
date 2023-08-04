@@ -25,9 +25,9 @@ describe("US-01 - Create and list reservations", () => {
       .then(() => knex.migrate.latest())
   });
 
-  afterAll(async () => {
-    return await knex.migrate.rollback(null, true).then(() => knex.destroy());
-  });
+  // afterAll(async () => {
+  //   return await knex.migrate.rollback(null, true).then(() => knex.destroy());
+  // });
 
   describe("App", () => {
     describe("not found handler", () => {
